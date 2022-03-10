@@ -72,11 +72,14 @@ module BridgeApi
         "#{date}: #{description} #{amount}#{short_currency}"
       end
 
+      def icon
+        amount.negative? ? '🔻' : '➕'
+      end
+
       def to_s
         short_currency = currency_code == 'EUR' ? '€' : currency_code
-        sign = amount.negative? ? '🔻' : '➕'
         co2 = ", 🏭 #{co2_kg.round(2)}kg" if co2_kg&.positive?
-        "#{sign} #{date} #{description} (#{category_name}): #{amount}#{short_currency} #{co2}"
+        "#{icon} #{date} #{description} (#{category_name}): #{amount}#{short_currency} #{co2}"
       end
 
       def category_name
@@ -94,6 +97,10 @@ module BridgeApi
         # source: https://www.sncf-connect.com/aide/calcul-des-emissions-de-co2-sur-votre-trajet-en-train
         amount.abs * 2.12 * 1.73 / 1000
       end
+
+      def icon
+        '🚄'
+      end
     end
 
     class TER < TrainTransaction
@@ -107,6 +114,10 @@ module BridgeApi
         # approximation: 7.82km/€, 24.81 gCO2/km
         # source: https://www.sncf-connect.com/aide/calcul-des-emissions-de-co2-sur-votre-trajet-en-train
         amount.abs * 7.82 * 24.81 / 1000
+      end
+
+      def icon
+        '🚃'
       end
     end
 
@@ -123,6 +134,30 @@ module BridgeApi
         # FIXME: price is highly variable so date should be factored in to have a more precise estimation
         amount.abs / 1.7 * (100 / 4.20) * 96 / 1000
       end
+
+      def icon
+        '🚗'
+      end
+    end
+
+    class Groceries < Transaction
+      def self.match?(transaction)
+        transaction.category_id == 273
+      end
+
+      def co2_kg
+        # approximation:
+        # - assuming all groceries come from carrefour (https://www.carrefour.com/en/csr/commitment/reducing-ghg-emissions)
+        # - the group generated 2B kgCO2 in 2019
+        # - it generated 80B€ of revenue in 2019
+        # raw estimation is 0.025kgCO2/€
+        # FIXME: how could we differentiate between "local" buying and supermarkets?
+        amount.abs * 0.025
+      end
+
+      def icon
+        '🧺'
+      end
     end
 
     class AmazonDelivery < Transaction
@@ -138,6 +173,10 @@ module BridgeApi
         # in 2020, its revenue was $386B, so 351B€
         # raw estimation is 0.1727 kgCO2/$
         amount.abs * 0.1727
+      end
+
+      def icon
+        '📦'
       end
     end
   end
