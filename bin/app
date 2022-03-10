@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 
 require_relative '../lib/bridgeapi/client'
+require_relative '../lib/bridgeapi/transaction'
+require_relative '../lib/bridgeapi/dependencies'
 
 passwords = BridgeApi::PasswordStore.new('.passwords')
 client = BridgeApi::Client.new
@@ -34,25 +36,23 @@ client.items(token: access_token).each do |item|
   end
 end
 
-puts '📑 Fetching all categories for future reference'
-
-# @type [Hash<Integer, Hash>] categories indexed by their id
-categories = client.categories(token: access_token)
-                   .flat_map { |top_level| [top_level, top_level['categories']].flatten }
-                   .group_by { |category| category['id'] }
-                   .transform_values(&:first)
+# initialize service injection service
+BridgeApi::Dependencies.setup(client, access_token)
 
 n = 1000
 since = Time.now - 60 * 86_400
 puts "📑 Let's list #{n} transactions, since #{since}"
+total_co2_kg = 0
 # FIXME: the normal workflow is to list "updated" transactions and store them, instead of relisting them everytime check https://docs.bridgeapi.io/reference#transation-resource
 client
   .transactions(since: since, token: access_token)
   .lazy
   .take(n)
+  .map { |t| BridgeApi::Transaction::Transaction.build(t) }
   .each do |transaction|
   # {"id"=>38000730851904, "clean_description"=>"Virement Sepa Recu Seux Provision Abonnement Remi Ter", "bank_description"=>"VIREMENT SEPA RECU SEUX PROVISION ABONNEMENT REMI TER", "amount"=>316.0, "date"=>"2022-02-28", "updated_at"=>"2022-03-10T16:21:19.797Z", "currency_code"=>"EUR", "is_deleted"=>false, "category_id"=>3, "account_id"=>29524470, "is_future"=>false, "show_client_side"=>true}
-  short_currency = transaction['currency_code'] == 'EUR' ? '€' : transaction['currency_code']
-  sign = (transaction['amount']).negative? ? '🔻' : '➕'
-  puts "  #{sign} #{transaction['date']} #{transaction['clean_description']} (#{categories[transaction['category_id']]['name']}): #{transaction['amount']}#{short_currency}"
+  puts "  #{transaction}"
+  total_co2_kg += transaction.co2_kg || 0
 end
+
+puts "Estimated CO2 footprint: #{total_co2_kg.round(0)}kg since #{since}"
