@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/bridgeapi/client'
+
+passwords = BridgeApi::PasswordStore.new('.passwords')
+client = BridgeApi::Client.new
+
+username = ENV['BRIDGEAPI_USER_EMAIL']
+
+unless passwords.password_for(username)
+  puts "Will create user account for #{username}"
+  password = client.create_user(username)['password']
+  passwords.store_for(username, password)
+  puts "Now will authenticate #{username}"
+  access_token = BridgeApi::AccessToken.new(client, username, passwords.password_for(username))
+  puts client.post_with_access_token('v2/connect/items/add', body: { country: 'fr', prefill_email: username }, token: access_token)
+  puts 'Connect using ⬆ url'
+  exit 42
+end
+
+access_token = BridgeApi::AccessToken.new(client, username, passwords.password_for(username))
+
+puts "📑 Let's list all connections to the banks"
+client.items(token: access_token).each do |item|
+  if (item['status']).zero?
+    puts "  ✅ #{item['id']} at #{client.bank(item['bank_id'])['name']}"
+  else
+    puts '  ' + <<~ERROR
+      ❌ #{item['id']} needs attention
+         code is #{item['status']} (#{item['status_code_info']}), #{item['status_code_description']}
+         bank is #{client.bank(item['bank_id'])['name']}
+    ERROR
+    exit 42 # let's exit to really show there is an issue
+  end
+end
+
+puts '📑 Fetching all categories for future reference'
+
+# @type [Hash<Integer, Hash>] categories indexed by their id
+categories = client.categories(token: access_token)
+                   .flat_map { |top_level| [top_level, top_level['categories']].flatten }
+                   .group_by { |category| category['id'] }
+                   .transform_values(&:first)
+
+n = 1000
+since = Time.now - 60 * 86_400
+puts "📑 Let's list #{n} transactions, since #{since}"
+# FIXME: the normal workflow is to list "updated" transactions and store them, instead of relisting them everytime check https://docs.bridgeapi.io/reference#transation-resource
+client
+  .transactions(since: since, token: access_token)
+  .lazy
+  .take(n)
+  .each do |transaction|
+  # {"id"=>38000730851904, "clean_description"=>"Virement Sepa Recu Seux Provision Abonnement Remi Ter", "bank_description"=>"VIREMENT SEPA RECU SEUX PROVISION ABONNEMENT REMI TER", "amount"=>316.0, "date"=>"2022-02-28", "updated_at"=>"2022-03-10T16:21:19.797Z", "currency_code"=>"EUR", "is_deleted"=>false, "category_id"=>3, "account_id"=>29524470, "is_future"=>false, "show_client_side"=>true}
+  short_currency = transaction['currency_code'] == 'EUR' ? '€' : transaction['currency_code']
+  sign = (transaction['amount']).negative? ? '🔻' : '➕'
+  puts "  #{sign} #{transaction['date']} #{transaction['clean_description']} (#{categories[transaction['category_id']]['name']}): #{transaction['amount']}#{short_currency}"
+end
