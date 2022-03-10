@@ -33,7 +33,8 @@ client.items(token: access_token).each do |item|
          code is #{item['status']} (#{item['status_code_info']}), #{item['status_code_description']}
          bank is #{client.bank(item['bank_id'])['name']}
     ERROR
-    exit 42 # let's exit to really show there is an issue
+    # let's exit to really show there is an issue
+    exit 42  unless ENV['BRIDGEAPI_IGNORE_ACCOUNT_ERROR']
   end
 end
 
