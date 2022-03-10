@@ -47,7 +47,7 @@ module BridgeApi
             0
           end
         end
-        puts "Found #{matching_classes.size} classes matching #{transaction.short_s}, selecting #{matching} as the most precise" if matching
+        # puts "Found #{matching_classes.size} classes matching #{transaction.short_s}, selecting #{matching} as the most precise"
         transaction = matching.new(transaction_hash) if matching
         transaction
       end
@@ -107,6 +107,21 @@ module BridgeApi
         # approximation: 7.82km/€, 24.81 gCO2/km
         # source: https://www.sncf-connect.com/aide/calcul-des-emissions-de-co2-sur-votre-trajet-en-train
         amount.abs * 7.82 * 24.81 / 1000
+      end
+    end
+
+    class VehiculeFuel < Transaction
+      def self.match?(transaction)
+        transaction.category_id == 87
+      end
+
+      def co2_kg
+        # approximation:
+        # - my car (Toyota Prius+ from 2014) emits 96g/km
+        # - my car consumes (in theory) 4.20L/100km
+        # - price of SP98: 1.7€/L in Jan 2022
+        # FIXME: price is highly variable so date should be factored in to have a more precise estimation
+        amount.abs / 1.7 * (100 / 4.20) * 96 / 1000
       end
     end
 
