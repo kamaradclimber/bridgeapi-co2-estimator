@@ -109,5 +109,21 @@ module BridgeApi
         amount.abs * 7.82 * 24.81 / 1000
       end
     end
+
+    class AmazonDelivery < Transaction
+      def self.match?(transaction)
+        # FIXME: we should probably detect if the transaction is recuring
+        # currently detection is only based on price
+        transaction.category_id == 186 && transaction.description =~ /amzn/i
+      end
+
+      def co2_kg
+        # approximation:
+        # in 2021, amazon emmitted 60.64B kg of CO2 (source: https://fortune.com/2021/06/30/amazon-carbon-footprint-pollution-grew/)
+        # in 2020, its revenue was $386B, so 351B€
+        # raw estimation is 0.1727 kgCO2/$
+        amount.abs * 0.1727
+      end
+    end
   end
 end
