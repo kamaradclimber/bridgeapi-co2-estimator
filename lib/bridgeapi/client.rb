@@ -13,6 +13,9 @@ module BridgeApi
     # @return [Time]
     attr_reader :expires_at
 
+    # @return [String]
+    attr_reader :username
+
     # @param client [BridgeApi::Client]
     # @param username [String]
     # @param password [String]
@@ -99,6 +102,13 @@ module BridgeApi
     # @return [Enumerable<Hash>] a list of categories
     def categories(token:)
       get_with_pagination('/v2/categories', token: token)
+    end
+
+    # @param token [Hash] a hash with, at least, access_token and expires_at keys
+    def connect_new_account(token:)
+      puts post_with_access_token('/v2/connect/items/add', body: { country: 'fr', prefill_email: token.username }, token: token)
+      puts 'Connect using ⬆ url, and relaunch program'
+      exit 42
     end
 
     private

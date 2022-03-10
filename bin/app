@@ -8,19 +8,20 @@ passwords = BridgeApi::PasswordStore.new('.passwords')
 client = BridgeApi::Client.new
 
 username = ENV['BRIDGEAPI_USER_EMAIL']
+new_user = false
 
 unless passwords.password_for(username)
   puts "Will create user account for #{username}"
   password = client.create_user(username)['password']
   passwords.store_for(username, password)
-  puts "Now will authenticate #{username}"
-  access_token = BridgeApi::AccessToken.new(client, username, passwords.password_for(username))
-  puts client.post_with_access_token('v2/connect/items/add', body: { country: 'fr', prefill_email: username }, token: access_token)
-  puts 'Connect using ⬆ url'
-  exit 42
+  new_user = true
 end
 
+puts "Now will authenticate #{username}"
 access_token = BridgeApi::AccessToken.new(client, username, passwords.password_for(username))
+
+client.connect_new_account(token: access_token) if new_user || ENV['BRIDGEAPI_NEW_ACCOUNT']
+
 
 puts "📑 Let's list all connections to the banks"
 client.items(token: access_token).each do |item|
