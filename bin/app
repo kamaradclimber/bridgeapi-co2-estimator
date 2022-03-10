@@ -69,5 +69,5 @@ total = transactions.map { |t| t.amount.abs }.sum
 puts "This method accounts for #{(accounted_euros / total * 100).round(0)}% of expenses"
 
 
-largest_without_estimation = transactions.select{ |t| t.class == BridgeApi::Transaction::Transaction }.max { |t| t.amount.abs }
+largest_without_estimation = transactions.select{ |t| t.class == BridgeApi::Transaction::Transaction }.max_by { |t| t.amount.abs }
 puts "Largest transaction without impact estimation: #{largest_without_estimation}"
