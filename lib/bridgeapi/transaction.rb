@@ -160,6 +160,21 @@ module BridgeApi
       end
     end
 
+    class Taxes < Transaction
+      def self.match?(transaction)
+        [159, 206, 208, 302].include?(transaction.category_id) || transaction.description =~ /Dgfip Finances Publiques/i
+      end
+
+      def co2_kg
+        # approximation: I estimate that paying taxes is 0 impact.
+        0
+      end
+
+      def icon
+        '🇫'
+      end
+    end
+
     class AmazonDelivery < Transaction
       def self.match?(transaction)
         # FIXME: we should probably detect if the transaction is recuring
