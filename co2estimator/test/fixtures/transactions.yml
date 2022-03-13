@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  description: MyString
+  full_description: MyString
+  amount: 9.99
+  currency_code: MyString
+  date: 2022-03-13
+  category_id: 1
+  original_hash: MyText
+
+two:
+  description: MyString
+  full_description: MyString
+  amount: 9.99
+  currency_code: MyString
+  date: 2022-03-13
+  category_id: 1
+  original_hash: MyText

@@ -1,0 +1,2 @@
+class BridgeApiAccessTokenController < ApplicationController
+end
