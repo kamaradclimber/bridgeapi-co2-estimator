@@ -8,12 +8,13 @@ Estimation will be very raw, this first iteration aims for breadth (covering as 
 
 == How to use ==
 
-This will likely be a work in progress, reading the code is likely required. For now it is not even a real ruby gem.
+This will likely be a work in progress, reading the code is likely required. For now it is not even a real ruby gem but a in progress ruby on rails app.
 
 As of 2022-03-10, one need several environment variables:
 - `BRIDGEAPI_CLIENT_ID`: a client id for https://bridgeapi.io
 - `BRIDGEAPI_CLIENT_SECRET`: the client secret for https://bridgeapi.io
-- `BRIDGEAPI_USER_EMAIL`: your identifier (you can put any email, it does not really matter for now)
+- `BRIDGEAPI_EXPECTED_SIGNATURE`: the signature from bridgeapi events (of the form `v1=78IET....IESR788EI`)
 
 Then:
-`bundle exec bin/app`
+`cd co2estimator`
+`bundle exec bin/rails server`
