@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_220_313_173_020) do
+ActiveRecord::Schema[7.0].define(version: 20_220_319_174_500) do
   create_table 'bridge_api_access_tokens', force: :cascade do |t|
     t.string 'username'
     t.string 'password'
@@ -24,10 +24,19 @@ ActiveRecord::Schema[7.0].define(version: 20_220_313_173_020) do
 
   create_table 'bridge_api_accounts', force: :cascade do |t|
     t.datetime 'last_successful_fetch'
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.string 'name'
+    t.integer 'bridge_api_item_id', null: false
+    t.index ['bridge_api_item_id'], name: 'index_bridge_api_accounts_on_bridge_api_item_id'
+  end
+
+  create_table 'bridge_api_items', force: :cascade do |t|
+    t.integer 'item_id'
     t.integer 'user_id', null: false
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
-    t.index ['user_id'], name: 'index_bridge_api_accounts_on_user_id'
+    t.index ['user_id'], name: 'index_bridge_api_items_on_user_id'
   end
 
   create_table 'transactions', force: :cascade do |t|
@@ -55,6 +64,7 @@ ActiveRecord::Schema[7.0].define(version: 20_220_313_173_020) do
   end
 
   add_foreign_key 'bridge_api_access_tokens', 'users'
-  add_foreign_key 'bridge_api_accounts', 'users'
+  add_foreign_key 'bridge_api_accounts', 'bridge_api_items'
+  add_foreign_key 'bridge_api_items', 'users'
   add_foreign_key 'transactions', 'bridge_api_accounts'
 end

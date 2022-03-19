@@ -12,6 +12,7 @@ class BridgeApiCallbackController < ApplicationController
     when 'item.created'
       puts 'Item created'
       puts params
+      handle_item_created(params['content'])
       # not handled for now
     when 'item.account.created'
       handle_account_created(params['content'])
@@ -37,6 +38,13 @@ class BridgeApiCallbackController < ApplicationController
 
   private
 
+  def handle_item_created(content)
+    user = User.where(bridgeapi_uuid: content['user_uuid']).first
+    raise "Unable to find a user with uuid #{content['user_uuid']}" unless user
+
+    user.bridge_api_items.create(item_id: content['item_id'])
+  end
+
   def handle_account_updated(params)
     puts 'Received account updated event'
     puts params
@@ -45,14 +53,16 @@ class BridgeApiCallbackController < ApplicationController
   end
 
   def handle_account_created(content)
+    client = BridgeApi::Dependencies.resolve(:client)
     puts 'Received account created event'
-    user = User.where(bridgeapi_uuid: content['user_uuid']).first
-    raise "Unknown user #{content['user_uuid']}" unless user
+    item = BridgeApiItem.where(item_id: content['item_id']).first
+    raise "Unknown item #{content['item_id']}" unless item
 
-    account = user.bridge_api_accounts.create(id: content['account_id'], last_successful_fetch: Time.at(0))
-    raise "Failed to create a new account for #{user.username}" unless account.save
+    account_info = client.account(content['account_id'], token: item.user.valid_access_token)
+    account = item.bridge_api_accounts.create(id: content['account_id'], last_successful_fetch: Time.at(0), name: account_info['name'])
+    raise "Failed to create a new account for #{item.user.username}" unless account.save
 
-    puts "Saved a new account for user #{user.username}"
+    puts "Saved a new account for user #{item.user.username}"
   end
 
   # this method ensure the authenticity of request from bridgeapi

@@ -1,5 +1,5 @@
 class BridgeApiAccount < ApplicationRecord
-  belongs_to :user
+  belongs_to :bridge_api_item
   has_many :transactions, dependent: :destroy
 
   def refresh_transactions(event_timestamp_in_ms)

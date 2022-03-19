@@ -1,8 +1,10 @@
 require 'bridgeapi/client'
 
 class User < ApplicationRecord
+  has_many :bridge_api_items, dependent: :destroy
   has_many :bridge_api_access_tokens, dependent: :destroy
-  has_many :bridge_api_accounts, dependent: :destroy
+
+  has_many :bridge_api_accounts, through: :bridge_api_items
 
   validates :username, presence: true, uniqueness: true
   validates_format_of :username, with: URI::MailTo::EMAIL_REGEXP
@@ -41,7 +43,7 @@ class User < ApplicationRecord
   end
 
   def all_transactions(since)
-    bridge_api_accounts.flat_map(&:transactions).sort_by(&:date).select { |t| t.date >= since }
+    bridge_api_items.flat_map(&:bridge_api_accounts).flat_map(&:transactions).sort_by(&:date).select { |t| t.date >= since }
   end
 
   def report(transactions)

@@ -109,6 +109,10 @@ module BridgeApi
       get_with_pagination("/v2/accounts/#{account_id}/transactions/updated?since=#{since.utc.strftime('%FT%T.%LZ')}", token: token)
     end
 
+    def account(account_id, token:)
+      get_with_access_token("/v2/accounts/#{account_id}", token: token)
+    end
+
     private
 
     # @param path [String] something like /v2/users
