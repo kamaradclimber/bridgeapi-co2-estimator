@@ -82,6 +82,7 @@
           <td><%= account.transactions.count %></td>
           <td>
           <%= button_to("Manual refresh", "#{bridge_api_account_path(account)}/refresh", remote: true) %>
+          <%= button_to("Synchronize from scratch", "#{bridge_api_account_path(account)}/scratch", remote: true) %>
           </td>
         </tr>
         <% end %>
@@ -106,6 +107,7 @@
         <tr>
           <th scope="col">Date</th>
           <th scope="col">Description</th>
+          <th scope="col">Category</th>
           <th scope="col">Amount</th>
           <th scope="col">CO2 estimation</th>
         </tr>
@@ -113,16 +115,21 @@
       <tbody>
         <% transactions.each do |transaction| %>
         <tr>
-          <td scope="row"><%= transaction.date %></th>
-          <td scope="row"><%= transaction.icon %> <%= transaction.description %> (<%= transaction.category_name %>)</th>
-          <td scope="row"><%= transaction.full_amount %></th>
+          <td scope="row"><%= transaction.date %></td>
+          <td scope="row">
+            <%= transaction.icon %> <%= transaction.description %> 
+          </td>
+          <td scope="row">
+            <div data-bs-toggle="tooltip" title="id: <%= transaction.category_id %>"><%= transaction.category_name %></div>
+          </td>
+          <td scope="row"><%= transaction.full_amount %></td>
           <td scope="row">
             <% if transaction.co2_kg %>
               <%= transaction.co2_kg.round(2) %>kg
             <% else %>
               ❓
             <% end %>
-          </th>
+          </td>
         </tr>
         <% end %>
       </tbody>
@@ -130,6 +137,13 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script>
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+              return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+
+    </script>
   </body>
 </html>
 

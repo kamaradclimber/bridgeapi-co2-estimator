@@ -16,4 +16,5 @@ Rails.application.routes.draw do
   post '/callback/bridgeapi', to: 'bridge_api_callback#callback_handler'
   resources :bridge_api_accounts # generate all CRUD links
   post '/bridge_api_accounts/:id/refresh', to: 'bridge_api_account#refresh'
+  post '/bridge_api_accounts/:id/scratch', to: 'bridge_api_account#scratch'
 end
