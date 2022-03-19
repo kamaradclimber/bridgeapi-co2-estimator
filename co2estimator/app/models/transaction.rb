@@ -44,7 +44,8 @@ end
 
 class TrainTransaction < Transaction
   def self.match?(transaction)
-    transaction.category_id == 197
+    transaction.category_id == 197 ||
+      (transaction.description =~ /Trainline/ && transaction.category_id == 249)
   end
 
   def co2_kg
@@ -132,8 +133,6 @@ end
 
 class AmazonDelivery < Transaction
   def self.match?(transaction)
-    # FIXME: we should probably detect if the transaction is recuring
-    # currently detection is only based on price
     transaction.category_id == 186 && transaction.description =~ /amzn/i
   end
 
@@ -147,6 +146,36 @@ class AmazonDelivery < Transaction
 
   def icon
     '📦'
+  end
+end
+
+class BarCoffee < Transaction
+  def self.match?(transaction)
+    [227, 313].include?(transaction.category_id)
+  end
+
+  def co2_kg
+    # we assume this does not emit any CO2
+    0
+  end
+
+  def icon
+    '🍸🥳'
+  end
+end
+
+class Salary < Transaction
+  def self.match?(transaction)
+    transaction.category_id == 230
+  end
+
+  def co2_kg
+    # taking emissions from Criteo (10k TEQ CO2) divided by income: $2B
+    amount * 10_000_000 / 2_000_000_000.0
+  end
+
+  def icon
+    '🏢'
   end
 end
 
