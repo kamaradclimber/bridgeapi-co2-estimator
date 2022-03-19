@@ -179,6 +179,20 @@ class Salary < Transaction
   end
 end
 
+class InternalTransfert < Transaction
+  def self.match?(transaction)
+    transaction.category_id == 326
+  end
+
+  def co2_kg
+    0
+  end
+
+  def icon
+    '🔄'
+  end
+end
+
 # goal is to allow to ignore some transactions based on regexp
 class IgnoredTransaction < Transaction
   def self.match?(transaction)
