@@ -18,20 +18,15 @@ class BridgeApiAccount < ApplicationRecord
   end
 
   def build_transaction(transaction_hash)
-    identifying_hash = {
-      bridgeapi_transaction_id: transaction_hash['id'], # we should put a DB index on this field
-      description: transaction_hash['clean_description'],
-      full_description: transaction_hash['bank_description'],
-      amount: transaction_hash['amount'],
-      currency_code: transaction_hash['currency_code'],
-      date: Date.parse(transaction_hash['date']), # we should put a DB index on this field
-      category_id: transaction_hash['category_id'],
-      original_hash: transaction_hash.to_json
-    }
-    transaction = transactions.find_or_initialize_by(identifying_hash)
+    transaction = transactions.find_or_initialize_by(bridgeapi_transaction_id: transaction_hash['id'])
+    transaction.description = transaction_hash['clean_description']
+    transaction.full_description = transaction_hash['bank_description']
+    transaction.amount = transaction_hash['amount']
+    transaction.currency_code = transaction_hash['currency_code']
+    transaction.date = Date.parse(transaction_hash['date'])
+    transaction.category_id = transaction_hash['category_id']
+    transaction.original_hash = transaction_hash.to_json
     matching_classes = Transaction.child_classes.select do |klass|
-      # puts "Testing #{klass}"
-
       klass.match?(transaction)
     rescue NotImplementedError
       false
@@ -47,8 +42,12 @@ class BridgeApiAccount < ApplicationRecord
     end
     puts "Found #{matching_classes.size} classes matching #{transaction.short_s}, selecting #{matching} as the most precise"
     if matching
-      transaction = matching.new(identifying_hash)
+      transaction.type = matching
       transactions << transaction
+      transaction.save!
+      # reload the transaction to get the correct class
+      # we can probably avoid the write-then-read pattern but it's quite convenient for now
+      transaction = transactions.find_or_initialize_by(bridgeapi_transaction_id: transaction_hash['id'])
     end
     transaction
   end
