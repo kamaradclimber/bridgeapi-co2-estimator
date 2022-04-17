@@ -27,6 +27,25 @@ class Transaction < ApplicationRecord
     false
   end
 
+  # self must be reloaded after calling this method, to make sure we get the proper class
+  def refresh_subclass
+    matching_classes = Transaction.child_classes.select do |klass|
+      klass.match?(self)
+    rescue NotImplementedError
+      false
+    end
+    matching = matching_classes.min { |k1, k2| (k1 <=> k2) || 0 }
+    puts "Found #{matching_classes.size} classes matching #{short_s}, selecting #{matching} as the most precise"
+    if matching
+      self.type = matching
+      save!
+      # we need to reload the transaction to get the correct class
+      # we can probably avoid the write-then-read pattern but it's quite convenient for now
+      return Transaction.find(id)
+    end
+    self
+  end
+
   def self.child_classes
     ObjectSpace
       .each_object(Class)
