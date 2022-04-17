@@ -20,27 +20,13 @@ class BridgeApiAccount < ApplicationRecord
 
   def build_transaction(transaction_hash)
     transaction = transactions.find_or_initialize_by(bridgeapi_transaction_id: transaction_hash['id'])
-    transaction.description = transaction_hash['clean_description']
-    transaction.full_description = transaction_hash['bank_description']
-    transaction.amount = transaction_hash['amount']
-    transaction.currency_code = transaction_hash['currency_code']
-    transaction.date = Date.parse(transaction_hash['date'])
-    transaction.category_id = transaction_hash['category_id']
-    transaction.original_hash = transaction_hash.to_json
+    transaction.hydrate_from(transaction_hash)
     matching_classes = Transaction.child_classes.select do |klass|
       klass.match?(transaction)
     rescue NotImplementedError
       false
     end
-    matching = matching_classes.min do |k1, k2|
-      if k1 < k2
-        -1
-      elsif k2 < k1
-        1
-      else
-        0
-      end
-    end
+    matching = matching_classes.min { |k1, k2| (k1 <=> k2) || 0 }
     puts "Found #{matching_classes.size} classes matching #{transaction.short_s}, selecting #{matching} as the most precise"
     if matching
       transaction.type = matching

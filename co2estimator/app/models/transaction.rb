@@ -1,6 +1,32 @@
 class Transaction < ApplicationRecord
   belongs_to :bridge_api_account
 
+  # this method allows to take a hash from the bridge_api and hydrate transaction fields
+  # @param [Hash] a hash representing the transaction in the bridge_api model
+  def hydrate_from(transaction_hash)
+    self.description = transaction_hash['clean_description']
+    self.full_description = transaction_hash['bank_description']
+    self.amount = transaction_hash['amount']
+    self.currency_code = transaction_hash['currency_code']
+    self.date = Date.parse(transaction_hash['date'])
+    self.category_id = transaction_hash['category_id']
+    self.original_hash = transaction_hash.to_json
+  end
+
+  # @return [Boolean] true if the user has updated manually a field
+  # currently this method is not used but could be useful in the future!
+  def user_updated?
+    transaction_hash = JSON.parse(original_hash)
+    return true if description != transaction_hash['clean_description']
+    return true if full_description != transaction_hash['bank_description']
+    return true if amount != transaction_hash['amount']
+    return true if currency_code != transaction_hash['currency_code']
+    return true if date != Date.parse(transaction_hash['date'])
+    return true if category_id != transaction_hash['category_id']
+
+    false
+  end
+
   def self.child_classes
     ObjectSpace
       .each_object(Class)
