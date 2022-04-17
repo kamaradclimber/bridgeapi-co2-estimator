@@ -30,7 +30,6 @@ class BridgeApiAccount < ApplicationRecord
     puts "Found #{matching_classes.size} classes matching #{transaction.short_s}, selecting #{matching} as the most precise"
     if matching
       transaction.type = matching
-      transactions << transaction
       transaction.save!
       # reload the transaction to get the correct class
       # we can probably avoid the write-then-read pattern but it's quite convenient for now
