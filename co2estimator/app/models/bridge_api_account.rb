@@ -10,7 +10,7 @@ class BridgeApiAccount < ApplicationRecord
     updated.each do |transaction_hash|
       puts transaction_hash
       transaction = build_transaction(transaction_hash)
-      puts "will save this transaction: #{transaction}"
+      # puts "will save this transaction: #{transaction}"
       transaction.save!
     end
     # we don't know how to be sure when records has been updated before updates was sent, so we substract 1h to avoid loosing updates

@@ -56,10 +56,15 @@ class User < ApplicationRecord
     lines << "Estimated CO2 footprint: #{total_co2_kg.round(0)}kg"
 
     accounted_euros = transactions.reject { |t| t.instance_of?(Transaction) }.map { |t| t.amount.abs }.sum
-    total = transactions.map { |t| t.amount.abs }.sum
-    total = 1 if total.zero?
+    total_euros = transactions.map { |t| t.amount.abs }.sum
+    total_euros = 1 if total_euros.zero?
 
-    lines << "This method accounts for #{(accounted_euros / total * 100).round(0)}% of expenses"
+    accounted_transactions = transactions.reject { |t| t.instance_of?(Transaction) }.count
+    total_count = [transactions.count, 1].max
+
+    lines << <<~MSG
+      This method accounts for #{(accounted_transactions.to_f / total_count * 100).round(0)}% of expanses (and #{(accounted_euros / total_euros * 100).round(0)}% of total value)
+    MSG
 
     largest_without_estimation = transactions.select { |t| t.instance_of?(Transaction) }.max_by { |t| t.amount.abs }
     lines << "Largest transaction without impact estimation: #{largest_without_estimation}"
