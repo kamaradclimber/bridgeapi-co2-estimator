@@ -4,6 +4,7 @@ class BridgeApiAccount < ApplicationRecord
 
   def refresh_transactions(event_timestamp_in_ms)
     client = BridgeApi::Dependencies.resolve(:client)
+    user = bridge_api_item.user
     updated = client.updated_transactions(since: last_successful_fetch, account_id: id, token: user.valid_access_token).to_a
     puts "Detected #{updated.size} transactions for account #{id} of user #{user.username}"
     updated.each do |transaction_hash|
