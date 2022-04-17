@@ -45,6 +45,11 @@ class Transaction < ApplicationRecord
     nil
   end
 
+  # @return [String, nil] an explaination of the co2 impact, or nil if not relevant
+  def explaination_html
+    nil
+  end
+
   def short_s
     "#{date}: #{description} #{full_amount}"
   end
@@ -84,6 +89,14 @@ class Electricity < Transaction
     #       are likely to measure their own electricity consumption
     emission_per_euro_in_kg = 50.0 / 1000 / 0.1740
     amount.abs * emission_per_euro_in_kg
+  end
+
+  def explaination_html
+    <<~HTML
+      In France, electricity emits 50gCO2/kWh. EDF charges 0.1740€/kWh (my own provider is much cheaper though).
+      We don't count subscription though.
+      Note: people interested in precise CO2 emission should likely monitor electritity consumption more precisely than using price (to account for variability in electricity emission).
+    HTML
   end
 
   def icon

@@ -16,7 +16,13 @@
         <%= msg %>
       </div>
     <% end %>
-    <%= form_with(model: @transaction) do |form| %>
+
+    <h2>Detailed explaination</h2>
+    This transaction has been analyzed to be of class <code><%= @transaction.class %></code>.<br/>
+    <%= @transaction.explaination_html %>
+
+    <h2>Edit</h2>
+    <%= form_with(model: @transaction, url: transaction_path) do |form| %>
       <div class="mb-3 form-floating">
         <%= form.text_field(:description, class: 'form-control', placeholder: 'description') %>
         <label for="transaction_description" class="form-label">Description</label>
