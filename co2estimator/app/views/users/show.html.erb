@@ -12,6 +12,11 @@
     <title>User <%= @user.id %></title>
   </head>
   <body>
+    <% flash.each do |type, msg| %>
+      <div class="alert alert-info">
+        <%= msg %>
+      </div>
+    <% end %>
     Your username is <%= @user.username %>
     <br/>
     <br/>

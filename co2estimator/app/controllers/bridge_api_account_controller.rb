@@ -2,6 +2,7 @@ class BridgeApiAccountController < ApplicationController
   def refresh
     @account = BridgeApiAccount.find(params[:id])
     @account.refresh_transactions(Time.now.to_i * 1000)
+    redirect_to(@account.bridge_api_item.user, notice: "Transactions updated for '#{@account.name}'!")
   end
 
   def scratch
@@ -9,5 +10,7 @@ class BridgeApiAccountController < ApplicationController
     @account.transactions.each(&:delete)
     @account.last_successful_fetch = Time.at(0)
     @account.refresh_transactions(Time.now.to_i * 1000)
+
+    redirect_to(@account.bridge_api_item.user, notice: "Transactions synchronized from scratch for '#{@account.name}'!")
   end
 end
