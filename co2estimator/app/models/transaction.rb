@@ -93,7 +93,7 @@ class Electricity < Transaction
 
   def explaination_html
     <<~HTML
-      In France, electricity emits 50gCO2/kWh. EDF charges 0.1740€/kWh (my own provider is much cheaper though).
+      In France, electricity emits <samp>50gCO2/kWh</samp>. EDF charges <samp>0.1740€/kWh</samp> (my own provider is much cheaper though).
       We don't count subscription though.
       Note: people interested in precise CO2 emission should likely monitor electritity consumption more precisely than using price (to account for variability in electricity emission).
     HTML
@@ -116,8 +116,8 @@ class InternetAccess < Transaction
 
   def explaination_html
     <<~HTML
-      ADEME <a href="https://adsl.free.fr/co2.pl">estimates</a> internet access in France to emits 3.95kgCO2/month.
-      We estimate internet access to be 40€/month in France.
+      ADEME <a href="https://adsl.free.fr/co2.pl">estimates</a> internet access in France to emits <samp>3.95kgCO2/month</samp>.
+      We estimate internet access to be <samp>40€/month</samp> in France.
     HTML
   end
 
@@ -138,8 +138,8 @@ class FreeInternetAccess < InternetAccess
 
   def explaination_html
     <<~HTML
-      Free <a href="https://adsl.free.fr/co2.pl">estimates</a> its internet access to emits 1.7kgCO2/month.
-      We estimate internet access to be 40€/month in France.
+      Free <a href="https://adsl.free.fr/co2.pl">estimates</a> its internet access to emits <samp>1.7kgCO2/month</samp>.
+      We estimate internet access to be <samp>40€/month</samp> in France.
     HTML
   end
 
@@ -161,7 +161,7 @@ class Mobile < Transaction
 
   def explaination_html
     <<~HTML
-      ADME <a href="https://expertises.ademe.fr/economie-circulaire/consommer-autrement/passer-a-laction/reconnaitre-produit-plus-respectueux-lenvironnement/dossier/laffichage-environnemental/affichage-environnemental-secteur-numerique">estimates</a> co2 emission of a mobile line to emit 50gCO2/GB of data. In France, 100GB costs ~12€ (at least with free mobile).
+      ADME <a href="https://expertises.ademe.fr/economie-circulaire/consommer-autrement/passer-a-laction/reconnaitre-produit-plus-respectueux-lenvironnement/dossier/laffichage-environnemental/affichage-environnemental-secteur-numerique">estimates</a> co2 emission of a mobile line to emit <samp>50gCO2/GB</samp> of data. In France, 100GB costs ~12€ (at least with free mobile).
     HTML
   end
 
@@ -185,7 +185,7 @@ class FreeMobile < Mobile
 
   def explaination_html
     <<~HTML
-      Free <a href="https://mobile.free.fr/account/conso-et-factures/empreinte-carbone">estimates</a> co2 emission of its mobile line to emit 24.3gCO2/GB of data. 100GB costs ~12€ (at least with free mobile).
+      Free <a href="https://mobile.free.fr/account/conso-et-factures/empreinte-carbone">estimates</a> co2 emission of its mobile line to emit <samp>24.3gCO2/GB</samp> of data. 100GB costs ~12€ (at least with free mobile).
     HTML
   end
 end
@@ -223,7 +223,7 @@ class TrainTransaction < Transaction
   def explaination_html
     # ticket "sampling" has been done on two tickets Chartres-Strasbourg-Chartres.
     <<~HTML
-      According to <a href="https://www.sncf-connect.com/aide/calcul-des-emissions-de-co2-sur-votre-trajet-en-train">SNCF</a> long distance train emits 1.73gCO2/km. Train prices are highly volatile so we assume 2.12km/€ based on a sample of tickets.
+      According to <a href="https://www.sncf-connect.com/aide/calcul-des-emissions-de-co2-sur-votre-trajet-en-train">SNCF</a> long distance train emits <samp>1.73gCO2/km</samp>. Train prices are highly volatile so we assume <samp>2.12km/€</samp> based on a sample of tickets.
     HTML
   end
 
@@ -245,7 +245,7 @@ class TER < TrainTransaction
 
   def explaination_html
     <<~HTML
-      According to <a href="https://www.sncf-connect.com/aide/calcul-des-emissions-de-co2-sur-votre-trajet-en-train">SNCF</a> short distance train emits 24.81gCO2/km. TER train prices are roughly kilometric: 7.82km/€ based on local train prices.
+      According to <a href="https://www.sncf-connect.com/aide/calcul-des-emissions-de-co2-sur-votre-trajet-en-train">SNCF</a> short distance train emits <samp>24.81gCO2/km</samp>. TER train prices are roughly kilometric: <samp>7.82km/€</samp> based on local train prices.
     HTML
   end
 
@@ -270,7 +270,7 @@ class VehiculeFuel < Transaction
 
   def explaination_html
     <<~HTML
-      My car (toyota prius+ from 2014) emits 96g/km, it consumes 4.20L/100km, price of SP98 is 1.7€/L as of Jan 2022.
+      My car (toyota prius+ from 2014) emits <samp>96g/km</samp>, it consumes <samp>4.20L/100km</samp>, price of SP98 is <samp>1.7€/L</samp> as of Jan 2022.
       Of course prices of gaz is extremely volatile so date should be factored to have a more precise estimation.
     HTML
   end
@@ -292,7 +292,7 @@ class Groceries < Transaction
 
   def explaination_html
     <<~HTML
-      Assuming all groceries come from carrefour: the group generated 2B kgCO2 in 2019, it generated 80B€ of revenue in 2019 => estimation is 0.025kgCO2/€. <a href="https://www.carrefour.com/en/csr/commitment/reducing-ghg-emissions">source</a>
+      Assuming all groceries come from carrefour: the group generated 2B kgCO2 in 2019, it generated 80B€ of revenue in 2019 => estimation is <samp>0.025kgCO2/€</samp>. <a href="https://www.carrefour.com/en/csr/commitment/reducing-ghg-emissions">source</a>
       Of course this does not factor the product themselves, only the added emissions from carrefour.
     HTML
   end
@@ -355,7 +355,7 @@ class AmazonDelivery < Transaction
 
   def explaination_html
     <<~HTML
-      In 2021, Amazon emitted 60.64B kgCO2 <a href="https://fortune.com/2021/06/30/amazon-carbon-footprint-pollution-grew/ttps://fortune.com/2021/06/30/amazon-carbon-footprint-pollution-grew/">source</a>. In 2020, its revenue was 351B€. A raw estimation is 0.1727 kgCO2/€.
+      In 2021, Amazon emitted 60.64B kgCO2 <a href="https://fortune.com/2021/06/30/amazon-carbon-footprint-pollution-grew/ttps://fortune.com/2021/06/30/amazon-carbon-footprint-pollution-grew/">source</a>. In 2020, its revenue was 351B€. A raw estimation is <samp>0.1727 kgCO2/€</samp>.
       Of course we are just taking into account Amazon added emissions, not the products themselves.
     HTML
   end
