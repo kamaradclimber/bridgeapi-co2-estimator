@@ -110,12 +110,15 @@ class InternetAccess < Transaction
   end
 
   def co2_kg
-    # approximation: 3.95kgCO2/month according to ademe
-    # subscription for 1month costs 39.99€ (on free website at least)
-    # of course, we could simply associate one transaction to 3.95kg
-    # source: https://adsl.free.fr/co2.pl
     emission_per_euro_in_kg = 3.95 / 39.99
     amount.abs * emission_per_euro_in_kg
+  end
+
+  def explaination_html
+    <<~HTML
+      ADEME <a href="https://adsl.free.fr/co2.pl">estimates</a> internet access in France to emits 3.95kgCO2/month.
+      We estimate internet access to be 40€/month in France.
+    HTML
   end
 
   def icon
@@ -129,12 +132,15 @@ class FreeInternetAccess < InternetAccess
   end
 
   def co2_kg
-    # approximation: 1.7kgCO2/month according to free
-    # subscription for 1month costs 39.99€ (on free website)
-    # of course, we could simply associate one transaction to 1.7kg
-    # source: https://adsl.free.fr/co2.pl
     emission_per_euro_in_kg = 1.7 / 39.99
     amount.abs * emission_per_euro_in_kg
+  end
+
+  def explaination_html
+    <<~HTML
+      Free <a href="https://adsl.free.fr/co2.pl">estimates</a> its internet access to emits 1.7kgCO2/month.
+      We estimate internet access to be 40€/month in France.
+    HTML
   end
 
   def icon
@@ -148,12 +154,15 @@ class Mobile < Transaction
   end
 
   def co2_kg
-    # approximation: 50gCO2/GB according to ademe
-    # subscription for 110GB costs 12€ (on free website)
     # source: https://mobile.free.fr/account/conso-et-factures/empreinte-carbone + prices on free.fr
-    # source: https://expertises.ademe.fr/economie-circulaire/consommer-autrement/passer-a-laction/reconnaitre-produit-plus-respectueux-lenvironnement/dossier/laffichage-environnemental/affichage-environnemental-secteur-numerique
     emission_per_euro_in_kg = 50.0 / 1000 * 110 / 12
     amount.abs * emission_per_euro_in_kg
+  end
+
+  def explaination_html
+    <<~HTML
+      ADME <a href="https://expertises.ademe.fr/economie-circulaire/consommer-autrement/passer-a-laction/reconnaitre-produit-plus-respectueux-lenvironnement/dossier/laffichage-environnemental/affichage-environnemental-secteur-numerique">estimates</a> co2 emission of a mobile line to emit 50gCO2/GB of data. In France, 100GB costs ~12€ (at least with free mobile).
+    HTML
   end
 
   def icon
@@ -173,6 +182,12 @@ class FreeMobile < Mobile
     emission_per_euro_in_kg = 24.3 / 1000 * 110 / 12
     amount.abs * emission_per_euro_in_kg
   end
+
+  def explaination_html
+    <<~HTML
+      Free <a href="https://mobile.free.fr/account/conso-et-factures/empreinte-carbone">estimates</a> co2 emission of its mobile line to emit 24.3gCO2/GB of data. 100GB costs ~12€ (at least with free mobile).
+    HTML
+  end
 end
 
 class Withdrawals < Transaction
@@ -181,10 +196,13 @@ class Withdrawals < Transaction
   end
 
   def co2_kg
-    # it's very hard to estimate what cash has been used to.
-    # Here we'll assume paying in cash is to pay small services or local products
-    # but that's a guess of course
     0
+  end
+
+  def explaination_html
+    <<~HTML
+      It's impossible to know what cash has been used to. We assume paying in cash is reserved from small services and local products. So a cost of zero. That's wishful thinking of course.
+    HTML
   end
 
   def icon
@@ -199,9 +217,14 @@ class TrainTransaction < Transaction
   end
 
   def co2_kg
-    # approximation: 2.12km/€ (based on Chartres-Strasbourg-Chartres at 277€ for 2), 1.73gCo2/km
-    # source: https://www.sncf-connect.com/aide/calcul-des-emissions-de-co2-sur-votre-trajet-en-train
     amount.abs * 2.12 * 1.73 / 1000
+  end
+
+  def explaination_html
+    # ticket "sampling" has been done on two tickets Chartres-Strasbourg-Chartres.
+    <<~HTML
+      According to <a href="https://www.sncf-connect.com/aide/calcul-des-emissions-de-co2-sur-votre-trajet-en-train">SNCF</a> long distance train emits 1.73gCO2/km. Train prices are highly volatile so we assume 2.12km/€ based on a sample of tickets.
+    HTML
   end
 
   def icon
@@ -217,9 +240,13 @@ class TER < TrainTransaction
   end
 
   def co2_kg
-    # approximation: 7.82km/€, 24.81 gCO2/km
-    # source: https://www.sncf-connect.com/aide/calcul-des-emissions-de-co2-sur-votre-trajet-en-train
     amount.abs * 7.82 * 24.81 / 1000
+  end
+
+  def explaination_html
+    <<~HTML
+      According to <a href="https://www.sncf-connect.com/aide/calcul-des-emissions-de-co2-sur-votre-trajet-en-train">SNCF</a> short distance train emits 24.81gCO2/km. TER train prices are roughly kilometric: 7.82km/€ based on local train prices.
+    HTML
   end
 
   def icon
@@ -241,6 +268,13 @@ class VehiculeFuel < Transaction
     amount.abs / 1.7 * (100 / 4.20) * 96 / 1000
   end
 
+  def explaination_html
+    <<~HTML
+      My car (toyota prius+ from 2014) emits 96g/km, it consumes 4.20L/100km, price of SP98 is 1.7€/L as of Jan 2022.
+      Of course prices of gaz is extremely volatile so date should be factored to have a more precise estimation.
+    HTML
+  end
+
   def icon
     '🚗'
   end
@@ -252,13 +286,15 @@ class Groceries < Transaction
   end
 
   def co2_kg
-    # approximation:
-    # - assuming all groceries come from carrefour (https://www.carrefour.com/en/csr/commitment/reducing-ghg-emissions)
-    # - the group generated 2B kgCO2 in 2019
-    # - it generated 80B€ of revenue in 2019
-    # raw estimation is 0.025kgCO2/€
     # FIXME: how could we differentiate between "local" buying and supermarkets?
     amount.abs * 0.025
+  end
+
+  def explaination_html
+    <<~HTML
+      Assuming all groceries come from carrefour: the group generated 2B kgCO2 in 2019, it generated 80B€ of revenue in 2019 => estimation is 0.025kgCO2/€. <a href="https://www.carrefour.com/en/csr/commitment/reducing-ghg-emissions">source</a>
+      Of course this does not factor the product themselves, only the added emissions from carrefour.
+    HTML
   end
 
   def icon
@@ -276,6 +312,12 @@ class Taxes < Transaction
     0
   end
 
+  def explaination_html
+    <<~HTML
+      I estimate paying taxes has no emission attached.
+    HTML
+  end
+
   def icon
     '🇫'
   end
@@ -287,8 +329,13 @@ class Leetchi < Transaction
   end
 
   def co2_kg
-    # approximation: We can't know how this money will be used. Let's ignore it for now
     0
+  end
+
+  def explaination_html
+    <<~HTML
+      We can't know how this money will be used, let's ignore it for now.
+    HTML
   end
 
   def icon
@@ -303,12 +350,14 @@ class AmazonDelivery < Transaction
   end
 
   def co2_kg
-    # approximation:
-    # in 2021, amazon emmitted 60.64B kg of CO2 (source: https://fortune.com/2021/06/30/amazon-carbon-footprint-pollution-grew/)
-    # in 2020, its revenue was $386B, so 351B€
-    # raw estimation is 0.1727 kgCO2/$
-    # of course we are just taking into account amazon value here (instead of the product fabrication)
     amount.abs * 0.1727
+  end
+
+  def explaination_html
+    <<~HTML
+      In 2021, Amazon emitted 60.64B kgCO2 <a href="https://fortune.com/2021/06/30/amazon-carbon-footprint-pollution-grew/ttps://fortune.com/2021/06/30/amazon-carbon-footprint-pollution-grew/">source</a>. In 2020, its revenue was 351B€. A raw estimation is 0.1727 kgCO2/€.
+      Of course we are just taking into account Amazon added emissions, not the products themselves.
+    HTML
   end
 
   def icon
@@ -322,8 +371,13 @@ class BarCoffee < Transaction
   end
 
   def co2_kg
-    # we assume this does not emit any CO2
     0
+  end
+
+  def explaination_html
+    <<~HTML
+      We assume going to a bar does not emit CO2. This is a wishful thinking of course!
+    HTML
   end
 
   def icon
@@ -338,7 +392,13 @@ class Salary < Transaction
 
   def co2_kg
     # taking emissions from Criteo (10k TEQ CO2) divided by income: $2B
-    amount * 10_000_000 / 2_000_000_000.0
+    amount * 10_000_000 / 1_849_390_000
+  end
+
+  def explaination_html
+    <<~HTML
+      Taking emissions of my employer Criteo (10k TEQ CO2) divided by income: $2B (1.849B€).
+    HTML
   end
 
   def icon
@@ -370,6 +430,12 @@ class IgnoredTransaction < Transaction
 
   def co2_kg
     0
+  end
+
+  def explaination_html
+    <<~HTML
+      This transaction has been ignored based on a regular expression on its title.
+    HTML
   end
 
   def icon

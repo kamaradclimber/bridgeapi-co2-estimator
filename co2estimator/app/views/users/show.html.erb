@@ -133,7 +133,7 @@
           <td scope="row">
             <% if transaction.co2_kg %>
               <% if transaction.explaination_html %>
-              <div data-bs-toggle="tooltip" title="<%= transaction.explaination_html %>">
+              <div data-bs-html="true" data-bs-toggle="tooltip" title="<%= transaction.explaination_html %>">
               <% else %>
                 <div>
               <% end %>
