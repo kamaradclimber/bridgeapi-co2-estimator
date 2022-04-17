@@ -19,8 +19,10 @@
 
     <h2>Detailed explaination</h2>
     This transaction has been analyzed to be of class <code><%= @transaction.class %></code>.<br/>
-    <%= @transaction.explaination_html.html_safe %><br/>
-    CO2 emission due to this transaction: <samp><%= @transaction.co2_kg.round(2) %>kg<samp>.
+    <%= @transaction.explaination_html&.html_safe %><br/>
+    <% if @transaction.co2_kg %>
+      CO2 emission due to this transaction: <samp><%= @transaction.co2_kg.round(2) %>kg<samp>.
+    <% end %>
 
     <h2>Edit</h2>
     <%= form_with(model: @transaction, url: transaction_path) do |form| %>
