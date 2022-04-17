@@ -1,6 +1,7 @@
 class BridgeApiAccount < ApplicationRecord
   belongs_to :bridge_api_item
   has_many :transactions, dependent: :destroy
+  delegate :user, to: :bridge_api_item
 
   def refresh_transactions(event_timestamp_in_ms)
     client = BridgeApi::Dependencies.resolve(:client)

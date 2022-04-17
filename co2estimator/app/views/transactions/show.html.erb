@@ -24,8 +24,12 @@
       CO2 emission due to this transaction: <samp><%= @transaction.co2_kg.round(2) %>kg<samp>.
     <% end %>
 
+    <% if @transaction.user_updated? %>
+      ⚠ This transaction has been manually tweaked after being imported from your bank.
+    <% end %>
+
     <h2>Edit</h2>
-    <%= form_with(model: @transaction, url: transaction_path) do |form| %>
+    <%= form_with(model: @transaction, url: transaction_path, scope: 'transaction') do |form| %>
       <div class="mb-3 form-floating">
         <%= form.text_field(:description, class: 'form-control', placeholder: 'description') %>
         <label for="transaction_description" class="form-label">Description</label>
