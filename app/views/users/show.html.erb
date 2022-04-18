@@ -29,18 +29,18 @@ your data on this website.
     </tr>
   </thead>
   <tbody>
-    <% @user.items.each do |item| %>
+    <% @user.bridge_api_items.each do |item| %>
     <tr>
-      <th scope="row"><%= item['id'] %></th>
-      <td><%= item['bank_name'] %></td>
+      <th scope="row"><%= item.id %></th>
+      <td><%= item.bank_name %></td>
       <td>
-        <% if item['status'].zero? %>
+        <% if item.status.zero? %>
           ✅
         <% else %>
-          ❌ (code: <%= item['status']%>)
+          ❌ (code: <%= item.status %>)
         <% end %>
       </td>
-      <td><%= item['status_code_info']%>: <%= item['status_code_description'] %></td>
+      <td><%= item.status_code_info %>: <%= item.status_code_description %></td>
     </tr>
     <% end %>
   </tbody>

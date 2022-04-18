@@ -25,17 +25,6 @@ class User < ApplicationRecord
     token
   end
 
-  def items
-    client = BridgeApi::Dependencies.resolve(:client)
-    my_items = client.items(token: valid_access_token).to_a
-    my_items.each do |item|
-      bank = client.bank(item['bank_id'])
-      item['bank_name'] = bank['name']
-      item['logo_url'] = bank['logo_url']
-    end
-    my_items
-  end
-
   # @return [Hash] with a redirect_url key
   def connect_new_bridgeapi_item
     client = BridgeApi::Dependencies.resolve(:client)

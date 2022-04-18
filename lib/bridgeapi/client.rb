@@ -84,6 +84,12 @@ module BridgeApi
       get_with_pagination('/v2/items', token: token)
     end
 
+    # @param id [Integer] item id 
+    # @param token [Hash] a hash with, at least, access_token and expires_at keys
+    def item(id:, token:)
+      get_with_access_token("/v2/items/#{id}", token: token)
+    end
+
     # @param id [Integer] the id of the bank
     def bank(id)
       get("/v2/banks/#{id}")
