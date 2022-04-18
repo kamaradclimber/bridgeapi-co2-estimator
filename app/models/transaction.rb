@@ -16,12 +16,12 @@ class Transaction < ApplicationRecord
   # @return [Boolean] true if the user has updated manually a field
   # currently this method is not used but could be useful in the future!
   def user_updated?
-    transaction_hash = JSON.parse(original_hash)
+    transaction_hash = JSON.parse(original_hash || '{}')
     return true if description != transaction_hash['clean_description']
     return true if full_description != transaction_hash['bank_description']
     return true if amount != transaction_hash['amount']
     return true if currency_code != transaction_hash['currency_code']
-    return true if date != Date.parse(transaction_hash['date'])
+    return true if date != (transaction_hash['date'] ? Date.parse(transaction_hash['date']) : nil)
     return true if category_id != transaction_hash['category_id']
 
     false
