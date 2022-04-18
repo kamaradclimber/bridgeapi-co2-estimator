@@ -104,6 +104,27 @@ class Transaction < ApplicationRecord
   end
 end
 
+class Spotify < Transaction
+  def self.match?(transaction)
+    transaction.description =~ /spotify/i
+  end
+
+  def co2_kg
+    emission_per_euro_in_kg = 169_000_000.0 / 8_337_000_000
+    amount.abs * emission_per_euro_in_kg
+  end
+
+  def explaination_html
+    <<~HTML
+      Spotify emited 169000tCO2 in 2020 (<a href="https://www.lifeatspotify.com/diversity-equity-impact/climate-action">source</a>) for a revenue of 9B$ (8337M€) in 2020.
+    HTML
+  end
+
+  def icon
+    '🎶'
+  end
+end
+
 class Toll < Transaction
   def self.match?(transaction)
     transaction.category_id == 309
