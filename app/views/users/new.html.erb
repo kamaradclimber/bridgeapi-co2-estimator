@@ -1,16 +1,18 @@
-<h1>Hello, world!</h1>
+<h1>Hello <%= request.headers['HTTP_REMOTE_NAME'] || request.headers['HTTP_REMOTE_USER'] %>!</h1>
+
+You can create an account on this website. In practice it will create a user for this application on the bridge api.
+There is no password required because you are already authenticated.
+
+<% default_username = request.headers['HTTP_REMOTE_EMAIL'] || 'you@example.org' %>
 
 <%= form_with model: @user do |form| %>
-  <div>
-    <%= form.label :username %><br>
-    <%= form.text_field :username %>
+  <div class="mb-3 form-floating">
+    <%= form.text_field(:username, class: 'form-control', placeholder: default_username) %>
+    <label for="user_username" class="form-label">Email</label>
     <% @user.errors.full_messages_for(:username).each do |message| %>
       <div><%= message %></div>
     <% end %>
   </div>
-
-  <!-- here we should allow user to protect their account with a password !-->
-
   <div>
     <%= form.submit %>
   </div>
