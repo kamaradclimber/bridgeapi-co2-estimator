@@ -109,6 +109,9 @@
           <%= link_to(transaction_path(transaction)) do %>
             <i class="bi-pencil" role="img" aria-label="Edit"></i>
           <% end %>
+          <% if transaction.user_updated? %>
+            <%= button_to("Reset", "#{transaction_path(transaction)}/pristine", remote: true) %>
+          <% end %>
           </td>
         </tr>
         <% end %>

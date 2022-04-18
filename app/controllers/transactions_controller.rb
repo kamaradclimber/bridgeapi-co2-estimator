@@ -23,4 +23,10 @@ class TransactionsController < ApplicationController
       redirect_back_or_to(transaction.bridge_api_account.user, allow_other_host: false, alert: 'Missing parameter for the update')
     end
   end
+
+  def set_pristine
+    transaction = Transaction.find(params[:id])
+    transaction = transaction.pristine!
+    redirect_back_or_to(transaction.bridge_api_account.user, allow_other_host: false, notice: 'Transaction set back to pristine condition')
+  end
 end

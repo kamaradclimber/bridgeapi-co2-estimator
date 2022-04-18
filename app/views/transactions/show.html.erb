@@ -24,8 +24,11 @@
       CO2 emission due to this transaction: <samp><%= @transaction.co2_kg.round(2) %>kg<samp>.
     <% end %>
 
+    <br/>
     <% if @transaction.user_updated? %>
       ⚠ This transaction has been manually tweaked after being imported from your bank.
+      <%= button_to("Revert state", "#{transaction_path(@transaction)}/pristine", remote: true) %>
+
     <% end %>
 
     <h2>Edit</h2>

@@ -27,7 +27,16 @@ class Transaction < ApplicationRecord
     false
   end
 
+  # reset transaction in pristine condition, as it was before user modification
+  # @return [Transaction] self or the new transaction object
+  def pristine!
+    hydrate_from(JSON.parse(original_hash))
+    save!
+    refresh_subclass
+  end
+
   # self must be reloaded after calling this method, to make sure we get the proper class
+  # @return [Transaction] self or the new transaction object
   def refresh_subclass
     matching_classes = Transaction.child_classes.select do |klass|
       klass.match?(self)

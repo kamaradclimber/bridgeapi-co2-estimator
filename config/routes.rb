@@ -5,10 +5,10 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
-  # root "articles#index"
   root 'users#index'
   resources :users # generate all CRUD links
   resources :transactions # generate all CRUD links
+  post '/transactions/:id/pristine', to: 'transactions#set_pristine'
 
   get '/users/:id/connect', to: 'users#connect_bridgeapi_item'
   get '/users/me', to: 'users#me' # TODO: generate this action
