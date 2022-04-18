@@ -61,7 +61,7 @@
     </table>
     <%
       transactions = []
-      transactions = @user.all_transactions(Time.now - 60 * 86400)
+      transactions = @user.all_transactions(Time.now - 6 * 30 * 86400)
     %>
 
     <h1>Report</h1>
