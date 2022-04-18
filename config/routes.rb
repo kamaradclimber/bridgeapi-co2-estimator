@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   resources :transactions # generate all CRUD links
   post '/transactions/:id/pristine', to: 'transactions#set_pristine'
 
+  resources :bridge_api_items # generate all CRUD links
+
   get '/users/:id/connect', to: 'users#connect_bridgeapi_item'
   get '/users/me', to: 'users#me' # TODO: generate this action
 

@@ -26,6 +26,7 @@ your data on this website.
       <th scope="col">Bank</th>
       <th scope="col">Status</th>
       <th scope="col">Comment</th>
+      <th scope="col">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -41,6 +42,14 @@ your data on this website.
         <% end %>
       </td>
       <td><%= item.status_code_info %>: <%= item.status_code_description %></td>
+      <td scope="row">
+      <%= link_to(bridge_api_item_path(item), data: {
+        turbo_method: :delete,
+        turbo_confirm: "Are you sure to delete this bank, its account and transactions forever?"
+      }) do %>
+      <button type="button" class="btn btn-danger">Destroy</button>
+      <% end %>
+      </td>
     </tr>
     <% end %>
   </tbody>
