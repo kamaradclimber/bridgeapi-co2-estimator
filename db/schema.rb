@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 20_220_319_174_500) do
+ActiveRecord::Schema[7.0].define(version: 20_220_418_163_239) do
   create_table 'bridge_api_access_tokens', force: :cascade do |t|
     t.string 'username'
     t.string 'password'
@@ -61,6 +61,7 @@ ActiveRecord::Schema[7.0].define(version: 20_220_319_174_500) do
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.string 'bridgeapi_uuid'
+    t.string 'email'
   end
 
   add_foreign_key 'bridge_api_access_tokens', 'users'

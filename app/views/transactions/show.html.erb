@@ -1,9 +1,3 @@
-<% flash.each do |type, msg| %>
-  <div class="alert alert-info">
-    <%= msg %>
-  </div>
-<% end %>
-
 <h2>Detailed explaination</h2>
 This transaction has been analyzed to be of class <code><%= @transaction.class %></code>.<br/>
 <%= @transaction.explaination_html&.html_safe %><br/>

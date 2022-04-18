@@ -3,12 +3,12 @@
 You can create an account on this website. In practice it will create a user for this application on the bridge api.
 There is no password required because you are already authenticated.
 
-<% default_username = request.headers['HTTP_REMOTE_EMAIL'] || 'you@example.org' %>
+<% default_username = request.headers['HTTP_REMOTE_USER'] || 'unknown' %>
 
 <%= form_with model: @user do |form| %>
   <div class="mb-3 form-floating">
     <%= form.text_field(:username, class: 'form-control', placeholder: default_username) %>
-    <label for="user_username" class="form-label">Email</label>
+    <label for="user_username" class="form-label">Username</label>
     <% @user.errors.full_messages_for(:username).each do |message| %>
       <div><%= message %></div>
     <% end %>

@@ -2,6 +2,7 @@ require 'bridgeapi/client'
 
 class UsersController < ApplicationController
   def index
+    authorize(User)
     @users = User.all
   end
 
@@ -11,10 +12,12 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
+    authorize(@user)
   end
 
   def destroy
     @user = User.find(params[:id])
+    authorize(@user)
 
     client = BridgeApi::Dependencies.resolve(:client)
     # delete on bridgeapi
@@ -31,8 +34,15 @@ class UsersController < ApplicationController
 
   def create
     client = BridgeApi::Dependencies.resolve(:client)
-    new_user = client.create_user(params[:user][:username])
-    @user = User.new(username: params[:user][:username], bridgeapi_password: new_user['password'], bridgeapi_uuid: new_user['uuid'])
+    email = "#{params[:user][:username]}@#{ENV['EXPOSED_HOST']}"
+    authorize(User.new(username: params[:user][:username])) # we need to authorize before the call to bridgeapi
+    new_user = client.create_user(email)
+    @user = User.new(
+      username: params[:user][:username],
+      bridgeapi_password: new_user['password'],
+      bridgeapi_uuid: new_user['uuid'],
+      email: email
+    )
 
     if @user.save
       redirect_to(@user)
@@ -44,7 +54,14 @@ class UsersController < ApplicationController
   def connect_bridgeapi_item
     # FIXME: [security] we should validate we are allowed to create a new account
     user = User.find(params[:id])
+    authorize(user)
     connect_response = user.connect_new_bridgeapi_item
     redirect_to(connect_response['redirect_url'], status: :see_other, allow_other_host: true)
+  end
+
+  def current_user
+    # we blindly trust the reverse proxy to set this correctly.
+    # FIXME: we should probably find a way to validate the header has been set by the proxy
+    PunditControllerContext.new(request.headers['HTTP_REMOTE_USER'], method(:flash))
   end
 end

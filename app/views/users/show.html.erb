@@ -1,9 +1,3 @@
-<% flash.each do |type, msg| %>
-  <div class="alert alert-info">
-    <%= msg %>
-  </div>
-<% end %>
-<br/>
 <h1>Account</h1>
 Your are <%= @user.username %><br/>
 <%= link_to(user_path(@user), data: {

@@ -77,3 +77,5 @@ gem 'dry-container'
 gem 'pry'
 
 gem 'rubocop'
+
+gem 'pundit', '~> 2.2'

@@ -7,7 +7,8 @@ class User < ApplicationRecord
   has_many :bridge_api_accounts, through: :bridge_api_items
 
   validates :username, presence: true, uniqueness: true
-  validates_format_of :username, with: URI::MailTo::EMAIL_REGEXP
+  validates :email, presence: true, uniqueness: true
+  validates_format_of :email, with: URI::MailTo::EMAIL_REGEXP
   validates :bridgeapi_password, presence: true, length: { minimum: 10 }
   validates :bridgeapi_uuid, presence: true, length: { minimum: 10 }
 
@@ -18,7 +19,7 @@ class User < ApplicationRecord
       return my_tokens.first
     end
 
-    token = BridgeApiAccessToken.new(username: username, password: bridgeapi_password, user: self)
+    token = BridgeApiAccessToken.new(username: email, password: bridgeapi_password, user: self)
     token.refresh!
     raise 'Impossible to save access token' unless token.save
 
