@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   resources :bridge_api_items # generate all CRUD links
 
   get '/users/:id/connect', to: 'users#connect_bridgeapi_item'
-  get '/users/me', to: 'users#me' # TODO: generate this action
+  get '/me', to: 'users#me'
 
   post '/callback/bridgeapi', to: 'bridge_api_callback#callback_handler'
   resources :bridge_api_accounts # generate all CRUD links

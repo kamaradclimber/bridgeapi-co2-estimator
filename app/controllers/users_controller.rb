@@ -8,6 +8,13 @@ class UsersController < ApplicationController
 
   def me
     # we should detect current user here (or at least redirect to the correct "show" invocation)
+    username = request.headers['HTTP_REMOTE_USER']
+    user = User.find_by(username: username)
+    if user
+      redirect_to(action: :show, id: user.id)
+    else
+      redirect_to(new_user_path, notice: "You don't have a user at the moment")
+    end
   end
 
   def show
