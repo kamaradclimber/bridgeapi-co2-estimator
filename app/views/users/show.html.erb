@@ -1,184 +1,141 @@
- <!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
-
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/dt-1.11.5/datatables.min.css"/>
-
-    <title>User <%= @user.id %></title>
-  </head>
-  <body>
-    <% flash.each do |type, msg| %>
-      <div class="alert alert-info">
-        <%= msg %>
-      </div>
-    <% end %>
-    <br/>
-    <h1>Account</h1>
-    Your are <%= @user.username %><br/>
-    <%= link_to(user_path(@user), data: {
-      turbo_method: :delete,
-      turbo_confirm: "Are you sure to delete the data #{@user.username} forever?"
-    }) do%><button type="button" class="btn btn-danger">Destroy</button><% end %>
-    your data on this website.
-    <br/>
-    <br/>
-    <%= link_to("#{user_path(@user)}/connect", data: {
-      user_id: @user.id
-    }) do %>
-    <button type="button" class="btn btn-success">Connect new bank</button>
-    <% end %>
-    <h1>Connected banks</h1>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Item ID</th>
-          <th scope="col">Bank</th>
-          <th scope="col">Status</th>
-          <th scope="col">Comment</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @user.items.each do |item| %>
-        <tr>
-          <th scope="row"><%= item['id'] %></th>
-          <td><%= item['bank_name'] %></td>
-          <td>
-            <% if item['status'].zero? %>
-              ✅
-            <% else %>
-              ❌ (code: <%= item['status']%>)
-            <% end %>
-          </td>
-          <td><%= item['status_code_info']%>: <%= item['status_code_description'] %></td>
-        </tr>
+<% flash.each do |type, msg| %>
+  <div class="alert alert-info">
+    <%= msg %>
+  </div>
+<% end %>
+<br/>
+<h1>Account</h1>
+Your are <%= @user.username %><br/>
+<%= link_to(user_path(@user), data: {
+  turbo_method: :delete,
+  turbo_confirm: "Are you sure to delete the data #{@user.username} forever?"
+}) do%><button type="button" class="btn btn-danger">Destroy</button><% end %>
+your data on this website.
+<br/>
+<br/>
+<%= link_to("#{user_path(@user)}/connect", data: {
+  user_id: @user.id
+}) do %>
+<button type="button" class="btn btn-success">Connect new bank</button>
+<% end %>
+<h1>Connected banks</h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Item ID</th>
+      <th scope="col">Bank</th>
+      <th scope="col">Status</th>
+      <th scope="col">Comment</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @user.items.each do |item| %>
+    <tr>
+      <th scope="row"><%= item['id'] %></th>
+      <td><%= item['bank_name'] %></td>
+      <td>
+        <% if item['status'].zero? %>
+          ✅
+        <% else %>
+          ❌ (code: <%= item['status']%>)
         <% end %>
-      </tbody>
-    </table>
-    <%
-      transactions = []
-      transactions = @user.all_transactions(Time.now - 6 * 30 * 86400)
-    %>
-
-    <h1>Report</h1>
-    <% @user.report(transactions).each do |line| %>
-      <%= line %><br/>
+      </td>
+      <td><%= item['status_code_info']%>: <%= item['status_code_description'] %></td>
+    </tr>
     <% end %>
+  </tbody>
+</table>
+<%
+  transactions = []
+  transactions = @user.all_transactions(Time.now - 6 * 30 * 86400)
+%>
 
-    <h1>Transactions</h1>
-    <table id="transactions" class="table">
-      <thead>
-        <tr>
-          <th scope="col">Date</th>
-          <th scope="col">Description</th>
-          <th scope="col">Category</th>
-          <th scope="col">Amount</th>
-          <th scope="col">CO2 estimation</th>
-          <th scope="col">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% transactions.each do |transaction| %>
-        <tr>
-          <td scope="row"><%= transaction.date %></td>
-          <td scope="row">
-            <%= transaction.icon %> <%= transaction.description %> 
-          </td>
-          <td scope="row">
-            <div data-bs-toggle="tooltip" title="id: <%= transaction.category_id %>"><%= transaction.category_name %></div>
-          </td>
-          <td scope="row"><%= transaction.full_amount %></td>
-          <td scope="row">
-            <% if transaction.co2_kg %>
-              <% if transaction.explaination_html %>
-              <div data-bs-html="true" data-bs-toggle="tooltip" title="<%= transaction.explaination_html %>">
-              <% else %>
-                <div>
-              <% end %>
-              <%= transaction.co2_kg.round(2) %>kg
-              </div>
-            <% else %>
-              ❓
-            <% end %>
-          </td>
-          <td scope="row">
-          <%= link_to(transaction_path(transaction)) do %>
-            <i class="bi-pencil" role="img" aria-label="Edit"></i>
+<h1>Report</h1>
+<% @user.report(transactions).each do |line| %>
+  <%= line %><br/>
+<% end %>
+
+<h1>Transactions</h1>
+<table id="transactions" class="table">
+  <thead>
+    <tr>
+      <th scope="col">Date</th>
+      <th scope="col">Description</th>
+      <th scope="col">Category</th>
+      <th scope="col">Amount</th>
+      <th scope="col">CO2 estimation</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% transactions.each do |transaction| %>
+    <tr>
+      <td scope="row"><%= transaction.date %></td>
+      <td scope="row">
+        <%= transaction.icon %> <%= transaction.description %> 
+      </td>
+      <td scope="row">
+        <div data-bs-toggle="tooltip" title="id: <%= transaction.category_id %>"><%= transaction.category_name %></div>
+      </td>
+      <td scope="row"><%= transaction.full_amount %></td>
+      <td scope="row">
+        <% if transaction.co2_kg %>
+          <% if transaction.explaination_html %>
+          <div data-bs-html="true" data-bs-toggle="tooltip" title="<%= transaction.explaination_html %>">
+          <% else %>
+            <div>
           <% end %>
-          <% if transaction.user_updated? %>
-            <%= button_to("Reset", "#{transaction_path(transaction)}/pristine", remote: true) %>
-          <% end %>
-          </td>
-        </tr>
+          <%= transaction.co2_kg.round(2) %>kg
+          </div>
+        <% else %>
+          ❓
         <% end %>
-      </tbody>
-    </table>
-
-    <h1>Debug information</h1>
-    <br/>
-
-    Existing tokens: <%= @user.bridge_api_access_tokens.size %>
-    <br/>
-    <ul>
-      <% @user.bridge_api_access_tokens.each do |token| %>
-        <li>expiration <%= token.expires_at %></li>
+      </td>
+      <td scope="row">
+      <%= link_to(transaction_path(transaction)) do %>
+        <i class="bi-pencil" role="img" aria-label="Edit"></i>
       <% end %>
-    </ul>
-    <br/>
-    <h1>Known bank accounts</h1>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Account</th>
-          <th scope="col">Last refreshed successfully</th>
-          <th scope="col">Nb transactions</th>
-          <th scope="col">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @user.bridge_api_accounts.each do |account| %>
-        <tr>
-          <th scope="row"><%= account.name %>(<%= account.id %>)</th>
-          <td><%= account.last_successful_fetch %></td>
-          <td><%= account.transactions.count %></td>
-          <td>
-          <%= button_to("Manual refresh", "#{bridge_api_account_path(account)}/refresh", remote: true) %>
-          <%= button_to("Synchronize from scratch", "#{bridge_api_account_path(account)}/scratch", remote: true) %>
-          </td>
-        </tr>
-        <% end %>
-      </tbody>
-    </table>
+      <% if transaction.user_updated? %>
+        <%= button_to("Reset", "#{transaction_path(transaction)}/pristine", remote: true) %>
+      <% end %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
 
+<h1>Debug information</h1>
+<br/>
 
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-    <script>
-      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-              return new bootstrap.Tooltip(tooltipTriggerEl)
-            })
-
-    </script>
-    <script
-			  src="https://code.jquery.com/jquery-3.6.0.min.js"
-			  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-			  crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.11.5/datatables.min.js"></script>
-    <script>
-      $(document).ready(function() {
-        $('#transactions').DataTable({
-          "pageLength": 50
-        });
-      } );
-    </script>
-  </body>
-</html>
-
+Existing tokens: <%= @user.bridge_api_access_tokens.size %>
+<br/>
+<ul>
+  <% @user.bridge_api_access_tokens.each do |token| %>
+    <li>expiration <%= token.expires_at %></li>
+  <% end %>
+</ul>
+<br/>
+<h1>Known bank accounts</h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Account</th>
+      <th scope="col">Last refreshed successfully</th>
+      <th scope="col">Nb transactions</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @user.bridge_api_accounts.each do |account| %>
+    <tr>
+      <th scope="row"><%= account.name %>(<%= account.id %>)</th>
+      <td><%= account.last_successful_fetch %></td>
+      <td><%= account.transactions.count %></td>
+      <td>
+      <%= button_to("Manual refresh", "#{bridge_api_account_path(account)}/refresh", remote: true) %>
+      <%= button_to("Synchronize from scratch", "#{bridge_api_account_path(account)}/scratch", remote: true) %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
