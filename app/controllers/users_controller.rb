@@ -65,10 +65,4 @@ class UsersController < ApplicationController
     connect_response = user.connect_new_bridgeapi_item
     redirect_to(connect_response['redirect_url'], status: :see_other, allow_other_host: true)
   end
-
-  def current_user
-    # we blindly trust the reverse proxy to set this correctly.
-    # FIXME: we should probably find a way to validate the header has been set by the proxy
-    PunditControllerContext.new(request.headers['HTTP_REMOTE_USER'], method(:flash))
-  end
 end

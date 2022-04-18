@@ -1,6 +1,7 @@
 class BridgeApiItemsController < ApplicationController
   def destroy
     item = BridgeApiItem.find(params[:id])
+    authorize(item, policy_class: UserOwnedPolicy)
     client = BridgeApi::Dependencies.resolve(:client)
     client.delete_item(id: item.item_id, token: item.user.valid_access_token)
     item.destroy

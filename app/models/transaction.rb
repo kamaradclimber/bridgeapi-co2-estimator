@@ -1,5 +1,6 @@
 class Transaction < ApplicationRecord
   belongs_to :bridge_api_account
+  delegate :user, to: :bridge_api_account
 
   # this method allows to take a hash from the bridge_api and hydrate transaction fields
   # @param [Hash] a hash representing the transaction in the bridge_api model

@@ -1,18 +1,13 @@
 class TransactionsController < ApplicationController
-  def index
-    user_id = params['user_id']
-    @user = User.find(user_id)
-    @transactions = Transaction.where(user_id: @user.id)
-  end
-
   def show
     @transaction = Transaction.find(params[:id])
+    authorize(@transaction, policy_class: UserOwnedPolicy)
   end
 
   def update
     transaction = Transaction.find(params[:id])
-    # FIXME: it is likely that we should filter:
-    # - who can update this transaction
+    authorize(transaction, policy_class: UserOwnedPolicy)
+
     permitted = params.require(:transaction).permit(:category_id, :description, :date)
     if permitted.permitted?
       transaction.update!(permitted)
