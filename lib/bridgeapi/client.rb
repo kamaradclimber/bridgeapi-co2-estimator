@@ -72,22 +72,28 @@ module BridgeApi
     end
 
     # @param since [Time]
-    # @param token [Hash] a hash with, at least, access_token and expires_at keys
+    # @param token [AccessToken]
     # @return [Enumerable<Hash>] a list of transaction
     def transactions(since:, token:)
       get_with_pagination("/v2/transactions?since=#{since.strftime('%Y-%m-%d')}", token: token)
     end
 
-    # @param token [Hash] a hash with, at least, access_token and expires_at keys
+    # @param token [AccessToken]
     # @return [Enumerable<Hash>] a list of items (i.e connection to the banks)
     def items(token:)
       get_with_pagination('/v2/items', token: token)
     end
 
-    # @param id [Integer] item id 
-    # @param token [Hash] a hash with, at least, access_token and expires_at keys
+    # @param id [Integer] item id
+    # @param token [AccessToken]
     def item(id:, token:)
       get_with_access_token("/v2/items/#{id}", token: token)
+    end
+
+    # @param id [Integer] item id
+    # @param token [AccessToken]
+    def delete_item(id:, token:)
+      delete_with_access_token("/v2/items/#{id}", token: token)
     end
 
     # @param id [Integer] the id of the bank
@@ -95,13 +101,13 @@ module BridgeApi
       get("/v2/banks/#{id}")
     end
 
-    # @param token [Hash] a hash with, at least, access_token and expires_at keys
+    # @param token [AccessToken]
     # @return [Enumerable<Hash>] a list of categories
     def categories
       get_with_pagination('/v2/categories', token: nil)
     end
 
-    # @param token [Hash] a hash with, at least, access_token and expires_at keys
+    # @param token [AccessToken]
     # @return [Hash] a hash with redirect_url key
     def connect_new_account(token:)
       post_with_access_token('/v2/connect/items/add', body: { country: 'fr', prefill_email: token.username }, token: token)
@@ -109,7 +115,7 @@ module BridgeApi
 
     # @param since [Time]
     # @param account_id [Integer]
-    # @param token [Hash] a hash with, at least, access_token and expires_at keys
+    # @param token [AccessToken]
     # @return [Enumerable<Hash>] a list of transaction
     def updated_transactions(since:, account_id:, token:)
       get_with_pagination("/v2/accounts/#{account_id}/transactions/updated?since=#{since.utc.strftime('%FT%T.%LZ')}", token: token)
@@ -122,7 +128,7 @@ module BridgeApi
     private
 
     # @param path [String] something like /v2/users
-    # @param token [Hash, nil] a hash with, at least, access_token and expires_at keys. Can be nil if we don't have a token
+    # @param token [AccessToken]
     # @return [Enumerable<Hash>]
     def get_with_pagination(path, token:, &block)
       return to_enum(:get_with_pagination, path, token: token) unless block_given?
@@ -136,7 +142,7 @@ module BridgeApi
     end
 
     # @param path [String] something like /v2/users
-    # @param token [Hash] a hash with, at least, access_token and expires_at keys
+    # @param token [AccessToken]
     def get_with_access_token(path, token: nil)
       headers = {}
       headers[:Authorization] = "Bearer #{token.value}" if token
@@ -168,11 +174,38 @@ module BridgeApi
 
     # @param path [String] something like /v2/users
     # @param body [Hash]
-    # @param token [Hash] a hash with, at least, access_token and expires_at keys
+    # @param token [AccessToken]
     def post_with_access_token(path, body:, token:)
       post(path, body: body, headers: {
              Authorization: "Bearer #{token.value}"
            })
+    end
+
+    # @param path [String] something like /v2/users
+    # @param token [AccessToken]
+    def delete_with_access_token(path, token:)
+      delete(path, headers: {
+               Authorization: "Bearer #{token.value}"
+             })
+    end
+
+    def delete(path, headers: {})
+      uri = URI.parse("https://api.bridgeapi.io#{path}")
+      request = Net::HTTP::Delete.new(uri)
+      request['Bridge-Version'] = '2021-06-01'
+      request['Client-Id'] = @client_id
+      request['Client-Secret'] = @client_secret
+      headers.each { |k, v| request[k] = v }
+
+      req_options = {
+        use_ssl: uri.scheme == 'https'
+      }
+
+      response = Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|
+        http.request(request)
+      end
+
+      raise "Error while DELETING-ing to #{path}, code was #{response.code} (answer: #{response.body})" unless response.code.to_i == 204
     end
 
     def post(path, body:, headers: {}, body_expected: true)
