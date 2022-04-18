@@ -104,6 +104,49 @@ class Transaction < ApplicationRecord
   end
 end
 
+class Toll < Transaction
+  def self.match?(transaction)
+    transaction.category_id == 309
+  end
+
+  def co2_kg
+    emission_per_euro_in_kg = 7_071_000 / 1_460_000_000.0
+    amount.abs * emission_per_euro_in_kg
+  end
+
+  def explaination_html
+    <<~HTML
+      Taking cofiroute GHG <a href="https://bilans-ges.ademe.fr/fr/bilanenligne/detail/index/idElement/4116/back/bilans">summary</a>, we can see emissions in 2019 are 7071 tCO2 (excluding scope 3 which includes clients emissions, already taken into account with gaz spending). Toll <a href="https://www.vinci.com/publi/vinci_autoroutes/cofiroute/2019-cofiroute-financial-report.pdf">revenue</a> in 2019 was 1460M€. It gives 0.00484kgCO2/€
+    HTML
+  end
+
+  def icon
+    '🚧'
+  end
+end
+
+class Gas < Transaction
+  def self.match?(transaction)
+    transaction.category_id == 218
+  end
+
+  def co2_kg
+    emission_per_euro_in_kg = 0.227 / 16.33
+    amount.abs * emission_per_euro_in_kg
+  end
+
+  def explaination_html
+    <<~HTML
+      In France, <a href="https://bilans-ges.ademe.fr/documentation/UPLOAD_DOC_FR/index.htm?gaz.htm">according</a> to ADEME, gas has an equivalent of 0.227kgCO2/kWh (from production to combustion).
+      Gas price from my <a href="http://www.rseipc.fr/particuliers/tarifs_gaz.php">provider</a> is 16.33€/kWh.
+    HTML
+  end
+
+  def icon
+    ''
+  end
+end
+
 class Electricity < Transaction
   def self.match?(transaction)
     transaction.category_id == 217
