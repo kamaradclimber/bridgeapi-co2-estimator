@@ -180,7 +180,7 @@ class Electricity < Transaction
     # note: this is an estimation from the money transfer. People interested in their CO2 emission
     #       are likely to measure their own electricity consumption
     emission_per_euro_in_kg = 50.0 / 1000 / 0.1740
-    amount.abs * emission_per_euro_in_kg
+    -amount * emission_per_euro_in_kg
   end
 
   def explaination_html
