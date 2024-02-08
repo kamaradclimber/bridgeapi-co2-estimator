@@ -484,13 +484,14 @@ class Salary < Transaction
   end
 
   def co2_kg
-    # taking emissions from Criteo (10k TEQ CO2) divided by income: $2B
-    amount * 10_000_000 / 1_849_390_000
+    amount * (370 + 554 + 43_000) * 1000 / 222_742_522
   end
 
   def explaination_html
     <<~HTML
-      Taking emissions of my employer Criteo (10k TEQ CO2) divided by income: $2B (1.849B€).
+      Taking emissions of my employer Criteo divided by total salaries: 222.742.522€.
+      Carbon footprint is estimated by adding 370tCO2 from business trips, 554tCO2 from electricity in the office and 43ktCO2 from infrastructure.
+      <a href="https://filecache.investorroom.com/mr5ir_criteo/1603/CRITEO%202021%20CSR%20Report_VENG_FEB21.pdf">source</a>
     HTML
   end
 

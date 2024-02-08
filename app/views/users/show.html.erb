@@ -131,7 +131,11 @@ Existing tokens: <%= @user.bridge_api_access_tokens.size %>
   <tbody>
     <% @user.bridge_api_accounts.each do |account| %>
     <tr>
-      <th scope="row"><%= account.name %>(<%= account.id %>)</th>
+      <th scope="row">
+        <div data-bs-toggle="tooltip" title="id: <%= account.id %>">
+          <%= account.name %> (<%= account.bridge_api_item.bank_name %>)
+        </div>
+      </th>
       <td><%= account.last_successful_fetch %></td>
       <td><%= account.transactions.count %></td>
       <td>
